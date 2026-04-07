@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Notas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        input.error {
+            border-color: #ff4757;
+            box-shadow: 0 0 0 4px rgba(255, 71, 87, 0.2);
+        }
+
+        .error-message {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result.approve {
+            background: linear-gradient(135deg, #2ed573 0%, #26de81 100%);
+            color: white;
+        }
+
+        .result.suppletorio {
+            background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);
+            color: white;
+        }
+
+        .result.fail {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+            color: white;
+        }
+
+        .result h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .suma {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .nota-necesaria {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Calculadora de Notas</h1>
+        
+        <div class="input-group">
+            <label for="nota1">Primer Bimestre (0 - 20)</label>
+            <input type="number" id="nota1" min="0" max="20" step="0.01" placeholder="0">
+            <p class="error-message" id="error1">La nota debe estar entre 0 y 20</p>
+        </div>
+
+        <div class="input-group">
+            <label for="nota2">Segundo Bimestre (0 - 20)</label>
+            <input type="number" id="nota2" min="0" max="20" step="0.01" placeholder="0">
+            <p class="error-message" id="error2">La nota debe estar entre 0 y 20</p>
+        </div>
+
+        <button class="btn" onclick="calcular()">Calcular</button>
+
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <script>
+        function calcular() {
+            const nota1 = parseFloat(document.getElementById('nota1').value);
+            const nota2 = parseFloat(document.getElementById('nota2').value);
+            const resultado = document.getElementById('resultado');
+            const error1 = document.getElementById('error1');
+            const error2 = document.getElementById('error2');
+            const input1 = document.getElementById('nota1');
+            const input2 = document.getElementById('nota2');
+
+            error1.style.display = 'none';
+            error2.style.display = 'none';
+            input1.classList.remove('error');
+            input2.classList.remove('error');
+
+            let hayError = false;
+
+            if (isNaN(nota1) || nota1 < 0 || nota1 > 20) {
+                error1.style.display = 'block';
+                input1.classList.add('error');
+                hayError = true;
+            }
+
+            if (isNaN(nota2) || nota2 < 0 || nota2 > 20) {
+                error2.style.display = 'block';
+                input2.classList.add('error');
+                hayError = true;
+            }
+
+            if (hayError) {
+                resultado.classList.remove('show');
+                return;
+            }
+
+            const suma = nota1 + nota2;
+
+            resultado.className = 'result show';
+
+            if (suma > 28) {
+                resultado.classList.add('approve');
+                resultado.innerHTML = `
+                    <h2>Aprueba la materia</h2>
+                    <div class="suma">${suma.toFixed(2)} / 40</div>
+                    <p>Felicidades, aprobaste con exito!</p>
+                `;
+            } else if (suma >= 18) {
+                const necesita = (28 - suma).toFixed(2);
+                resultado.classList.add('suppletorio');
+                resultado.innerHTML = `
+                    <h2>Supletorio</h2>
+                    <div class="suma">${suma.toFixed(2)} / 40</div>
+                    <p>Necesitas presentar supletorio</p>
+                    <div class="nota-necesaria">
+                        Necesitas obtener: ${necesita} puntos adicionales
+                    </div>
+                `;
+            } else {
+                resultado.classList.add('fail');
+                resultado.innerHTML = `
+                    <h2>Reprueba la materia</h2>
+                    <div class="suma">${suma.toFixed(2)} / 40</div>
+                    <p>Lo siento, no alcanzaste el puntaje minimo</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
